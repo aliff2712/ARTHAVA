@@ -30,14 +30,21 @@ export default function RegisterPage() {
     const supabase = createClient()
 
     // 1. Daftarkan user
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: { data: { nama_lengkap: form.nama } }
-    })
+   const { data, error: signUpError } = await supabase.auth.signUp({
+  email: form.email,
+  password: form.password,
+  options: { data: { nama_lengkap: form.nama } }
+})
 
     if (signUpError || !data.user) {
       setError(signUpError?.message || 'Pendaftaran gagal.')
+      setLoading(false)
+      return
+    }
+
+    // Pastikan session aktif sebelum insert
+    if (!data.session) {
+      setError('Silakan cek email kamu untuk konfirmasi akun terlebih dahulu.')
       setLoading(false)
       return
     }
